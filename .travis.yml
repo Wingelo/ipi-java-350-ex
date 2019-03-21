@@ -12,3 +12,7 @@ script:
 branches:
   only:
     - tpcorrection
+
+sonarqube:
+  branches :
+    - tpcorrection
