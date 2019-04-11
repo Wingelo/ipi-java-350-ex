@@ -1,5 +1,4 @@
 package com.ipiecoles.java.java350.model;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -75,14 +74,19 @@ public class Employe {
     }
 
     public Integer getNbRtt(LocalDate d){
-        int i1 = d.isLeapYear() ? 365 : 366;
+        //  Si c'est une année normal retourne 365 sinon retourne 366 car c'est une année bisextile
+        int i1 = d.isLeapYear() ? 366 : 365;
+        // Nombre de samedi et dimanche dans l'année
         int var = 104;
-        switch (LocalDate.of(d.getYear(),1,1).getDayOfWeek()){
-            case THURSDAY: if(d.isLeapYear()) var =  var + 1; break;
-            case FRIDAY: if(d.isLeapYear()) var =  var + 2; else var =  var + 1;
-            case SATURDAY: var = var + 1; break;
+        // Regarde par le premier jour de l'année et en fonction du jour, on rajoute des jours dans le var
+        if (LocalDate.of(d.getYear(), 1, 1).getDayOfWeek() == DayOfWeek.SATURDAY) {
+            if (d.isLeapYear()) var = var + 2;
+            else var = var + 1;
         }
+        // Récupere les jours Feries de l'année en cours
         int monInt = (int) Entreprise.joursFeries(d).stream().filter(localDate -> localDate.getDayOfWeek().getValue() <= DayOfWeek.FRIDAY.getValue()).count();
+
+        // Retourne le nombre de rtt
         return (int) Math.ceil((i1 - Entreprise.NB_JOURS_MAX_FORFAIT - var - Entreprise.NB_CONGES_BASE - monInt) * tempsPartiel);
     }
 
@@ -121,7 +125,17 @@ public class Employe {
     }
 
     //Augmenter salaire
-    //public void augmenterSalaire(double pourcentage){}
+    public void augmenterSalaire(double pourcentage){
+
+        if(pourcentage > 0 ) {
+            try {
+                this.salaire = this.salaire + (this.salaire * pourcentage);
+            } catch (NullPointerException e){
+                e.getMessage();
+            }
+        }
+
+    }
 
     public Long getId() {
         return id;
